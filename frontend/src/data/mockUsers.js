@@ -1,0 +1,80 @@
+export const mockUsers = [
+  {
+    id: "USR-001",
+    name: "Dr. Arvind Subramanian",
+    email: "admin@example.com",
+    role: "MINISTRY_ADMIN",
+    department: "Ministry of Statistics & Programme Implementation (MoSPI)",
+    state: "National (All States)",
+    district: "All Districts",
+    status: "ACTIVE",
+    lastLogin: "2024-03-03T07:45:12Z",
+    assignedProjectsCount: 1482,
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "USR-002",
+    name: "Smt. Rohini Sharma, IAS",
+    email: "state.mh@example.com",
+    role: "STATE_AUTHORITY",
+    department: "Planning & Development Department, Govt of Maharashtra",
+    state: "Maharashtra",
+    district: "State Headquarters",
+    status: "ACTIVE",
+    lastLogin: "2024-03-02T16:20:00Z",
+    assignedProjectsCount: 264,
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "USR-003",
+    name: "Shri Rajeshwar Rao, IAS",
+    email: "dc.pune@example.com",
+    role: "DISTRICT_AUTHORITY",
+    department: "District Collectorate & Planning Cell",
+    state: "Maharashtra",
+    district: "Pune",
+    status: "ACTIVE",
+    lastLogin: "2024-03-03T09:12:44Z",
+    assignedProjectsCount: 48,
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "USR-004",
+    name: "Er. Ramesh Kulkarni",
+    email: "ee.pwd@example.com",
+    role: "OFFICER",
+    department: "Executive Engineer, Public Works Division II",
+    state: "Maharashtra",
+    district: "Pune",
+    status: "ACTIVE",
+    lastLogin: "2024-03-01T14:05:19Z",
+    assignedProjectsCount: 18,
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "USR-005",
+    name: "Priya Sundaram",
+    email: "analyst@example.com",
+    role: "ANALYST",
+    department: "National Risk Intelligence & Audit Unit",
+    state: "National",
+    district: "All Districts",
+    status: "ACTIVE",
+    lastLogin: "2024-03-03T08:30:10Z",
+    assignedProjectsCount: 1482,
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "USR-006",
+    name: "Vikramaditya Rathore",
+    email: "officer.up@example.com",
+    role: "OFFICER",
+    department: "Superintending Engineer, Jal Nigam",
+    state: "Uttar Pradesh",
+    district: "Varanasi",
+    status: "ACTIVE",
+    lastLogin: "2024-02-28T11:22:30Z",
+    assignedProjectsCount: 24,
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80"
+  }
+];
