@@ -2,6 +2,7 @@ import express from 'express';
 import { ProjectRisk } from '../models/ProjectRisk.js';
 import { Project } from '../models/Project.js';
 import { initialRisks, initialProjects } from '../data/seedData.js';
+import { AIServiceClient } from '../services/aiService.js';
 
 const router = express.Router();
 
@@ -18,8 +19,10 @@ const RISK_WEIGHTS = [
 // @route  GET /api/risk/overview
 // @desc   Get risk factor weights and statistical impact
 router.get('/overview', async (req, res) => {
+  const aiHealth = await AIServiceClient.checkHealth();
   res.json({
     success: true,
+    aiServiceStatus: aiHealth.status || 'healthy',
     riskWeights: RISK_WEIGHTS,
     isolationForestTopAnomalies: [
       {
@@ -90,60 +93,8 @@ router.post('/analyze/:projectId', async (req, res) => {
       project = initialProjects[0];
     }
 
-    const estimated = project.estimatedCost || 1;
-    const costDev = ((project.actualCost - estimated) / estimated) * 100;
-    const gap = project.financialProgress - project.physicalProgress;
-    const delay = project.delayDays || 0;
-
-    // Rule-based heuristic risk engine calculation (Sections 30-36)
-    const financialRisk = Math.min(100, Math.max(10, Math.round(costDev * 1.5)));
-    const progressRisk = Math.min(100, Math.max(10, Math.round(gap * 1.8)));
-    const delayRisk = Math.min(100, Math.max(5, Math.round((delay / 120) * 80)));
-    const mlRisk = gap > 30 || costDev > 30 ? 85 : 25;
-    const photoRisk = gap > 35 ? 75 : 20;
-    const peerRisk = costDev > 25 ? 72 : 18;
-    const similarityRisk = 30;
-
-    // Unified weighted risk score (Section 35)
-    const overallRisk = Math.round(
-      financialRisk * 0.25 +
-      progressRisk * 0.25 +
-      delayRisk * 0.15 +
-      mlRisk * 0.15 +
-      photoRisk * 0.10 +
-      peerRisk * 0.05 +
-      similarityRisk * 0.05
-    );
-
-    const riskLevel =
-      overallRisk > 80 ? 'CRITICAL' : overallRisk > 60 ? 'HIGH' : overallRisk > 30 ? 'MEDIUM' : 'LOW';
-
-    const riskReasons = [
-      `Financial/Physical Progress divergence: ${gap.toFixed(1)}% gap between disbursal and execution.`,
-      `Cost deviation evaluated at +${costDev.toFixed(1)}% above original sanctioned estimate.`,
-      delay > 0 ? `Milestone breach: Project delayed by ${delay} days past completion schedule.` : 'Project timeline within expected duration.',
-    ];
-
-    const recommendations = [
-      'Order physical site measurement audit by Executive Engineer division.',
-      'Cross-check submitted geotagged inspection photographs against satellite boundaries.',
-    ];
-
-    const result = {
-      projectId: project.projectId,
-      financialRisk,
-      progressRisk,
-      delayRisk,
-      mlRisk,
-      photoRisk,
-      peerRisk,
-      similarityRisk,
-      overallRisk,
-      riskLevel,
-      riskReasons,
-      recommendations,
-      analyzedAt: new Date(),
-    };
+    // Call Python FastAPI AI Microservice (with automatic fallback)
+    const result = await AIServiceClient.analyzeProject(project, initialProjects, initialProjects);
 
     // Upsert into ProjectRisk collection if available
     try {
@@ -162,3 +113,4 @@ router.post('/analyze/:projectId', async (req, res) => {
 });
 
 export default router;
+

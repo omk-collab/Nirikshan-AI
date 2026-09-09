@@ -74,7 +74,14 @@ export default function Dashboard() {
     );
   }
 
-  const { kpis, riskDistribution, projectStatus, expenditureTrend, stateWiseProjects, quickInsights } = summary;
+  const {
+    kpis = {},
+    riskDistribution = [],
+    projectStatus = [],
+    expenditureTrend = [],
+    stateWiseProjects = [],
+    quickInsights = []
+  } = summary || {};
 
   // Custom tooltips
   const CustomTooltip = ({ active, payload, label }) => {
@@ -112,7 +119,7 @@ export default function Dashboard() {
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rose-950/50 hover:bg-rose-900/50 text-rose-300 border border-rose-800/40 text-xs font-semibold transition-colors"
             >
               <ShieldAlert className="w-3.5 h-3.5" />
-              Critical Queue ({kpis.criticalProjects})
+              Critical Queue ({kpis.criticalProjects ?? 0})
             </Link>
             <Link
               to="/projects"
@@ -129,7 +136,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
         <KpiCard
           title="Total Sanctioned Projects"
-          value={kpis.totalProjects.toLocaleString()}
+          value={kpis.totalProjects?.toLocaleString() ?? '0'}
           subtitle="Across 28 States & UTs"
           icon={FolderKanban}
           variant="default"
@@ -153,7 +160,7 @@ export default function Dashboard() {
         />
         <KpiCard
           title="Completed Works"
-          value={kpis.completedProjects.toLocaleString()}
+          value={kpis.completedProjects?.toLocaleString() ?? '0'}
           subtitle="60.2% Completion Rate"
           icon={CheckCircle2}
           variant="success"
@@ -161,7 +168,7 @@ export default function Dashboard() {
         />
         <KpiCard
           title="Delayed Beyond Schedule"
-          value={kpis.delayedProjects.toLocaleString()}
+          value={kpis.delayedProjects?.toLocaleString() ?? '0'}
           subtitle="16.5% of Active Portfolio"
           icon={Clock}
           variant="warning"
@@ -169,7 +176,7 @@ export default function Dashboard() {
         />
         <KpiCard
           title="High Risk Projects"
-          value={kpis.highRiskProjects.toLocaleString()}
+          value={kpis.highRiskProjects?.toLocaleString() ?? '0'}
           subtitle="Requires District Vigilance"
           icon={AlertTriangle}
           variant="high"
@@ -177,7 +184,7 @@ export default function Dashboard() {
         />
         <KpiCard
           title="Critical Risk Projects"
-          value={kpis.criticalProjects.toLocaleString()}
+          value={kpis.criticalProjects?.toLocaleString() ?? '0'}
           subtitle="Immediate Audit Priority"
           icon={ShieldAlert}
           variant="critical"
@@ -185,7 +192,7 @@ export default function Dashboard() {
         />
         <KpiCard
           title="National Risk Index"
-          value={`${kpis.averageRiskScore} / 100`}
+          value={`${kpis.averageRiskScore ?? 0} / 100`}
           subtitle="Weighted Multimodal Score"
           icon={Activity}
           variant="default"

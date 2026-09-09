@@ -8,7 +8,7 @@ export const riskService = {
       return simulateAsync(mockRiskData);
     }
     const response = await apiClient.get('/risk/overview');
-    return response.data;
+    return response.data?.data || response.data;
   },
 
   async getCriticalProjects() {
@@ -17,14 +17,19 @@ export const riskService = {
       return simulateAsync(critical);
     }
     const response = await apiClient.get('/risk/critical');
-    return response.data;
+    return response.data?.data || response.data;
   },
 
   async getIsolationForestAnomalies() {
     if (USE_MOCK_DATA) {
       return simulateAsync(mockRiskData.isolationForestTopAnomalies);
     }
-    const response = await apiClient.get('/risk/anomalies');
-    return response.data;
+    try {
+      const response = await apiClient.get('/risk/anomalies');
+      return response.data?.data || response.data;
+    } catch {
+      const response = await apiClient.get('/risk/overview');
+      return response.data?.isolationForestTopAnomalies || mockRiskData.isolationForestTopAnomalies;
+    }
   },
 };
