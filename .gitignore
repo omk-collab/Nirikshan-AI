@@ -1,3 +1,12 @@
 .env
 .envexample
 node_modules
+# Python virtual environment
+ai-service/venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env

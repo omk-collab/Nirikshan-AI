@@ -7,7 +7,7 @@ export const dashboardService = {
       return simulateAsync(mockDashboardSummary);
     }
     const response = await apiClient.get('/dashboard/summary');
-    return response.data;
+    return response.data?.data || response.data;
   },
 
   async getStateWiseDistribution() {
@@ -15,7 +15,7 @@ export const dashboardService = {
       return simulateAsync(mockDashboardSummary.stateWiseProjects);
     }
     const response = await apiClient.get('/dashboard/state-wise');
-    return response.data;
+    return response.data?.data || response.data;
   },
 
   async getTrends() {
@@ -23,6 +23,6 @@ export const dashboardService = {
       return simulateAsync(mockDashboardSummary.expenditureTrend);
     }
     const response = await apiClient.get('/dashboard/trends');
-    return response.data;
+    return response.data?.data || response.data;
   },
 };
