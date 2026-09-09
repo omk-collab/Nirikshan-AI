@@ -25,9 +25,11 @@ export default function Alerts() {
     async function loadAlerts() {
       try {
         const data = await alertService.getAlerts();
-        setAlerts(data || []);
+        const alertList = Array.isArray(data) ? data : (data?.data || []);
+        setAlerts(alertList);
       } catch (e) {
         console.error(e);
+        setAlerts([]);
       } finally {
         setLoading(false);
       }
@@ -37,26 +39,29 @@ export default function Alerts() {
 
   const handleStatusChange = async (alertId, newStatus) => {
     try {
-      const updated = await alertService.updateAlertStatus(alertId, newStatus);
-      setAlerts((prev) =>
-        prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
-      );
+      await alertService.updateAlertStatus(alertId, newStatus);
+      setAlerts((prev) => {
+        const prevList = Array.isArray(prev) ? prev : [];
+        return prevList.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a));
+      });
     } catch (e) {
       console.error(e);
     }
   };
 
-  const filteredAlerts = alerts.filter((a) => {
+  const safeAlerts = Array.isArray(alerts) ? alerts : [];
+
+  const filteredAlerts = safeAlerts.filter((a) => {
     if (activeTab === 'ALL') return true;
     if (activeTab === 'RESOLVED') return a.status === 'RESOLVED';
     return a.severity === activeTab && a.status !== 'RESOLVED';
   });
 
   const countBySeverity = {
-    CRITICAL: alerts.filter((a) => a.severity === 'CRITICAL' && a.status !== 'RESOLVED').length,
-    HIGH: alerts.filter((a) => a.severity === 'HIGH' && a.status !== 'RESOLVED').length,
-    MEDIUM: alerts.filter((a) => a.severity === 'MEDIUM' && a.status !== 'RESOLVED').length,
-    RESOLVED: alerts.filter((a) => a.status === 'RESOLVED').length,
+    CRITICAL: safeAlerts.filter((a) => a.severity === 'CRITICAL' && a.status !== 'RESOLVED').length,
+    HIGH: safeAlerts.filter((a) => a.severity === 'HIGH' && a.status !== 'RESOLVED').length,
+    MEDIUM: safeAlerts.filter((a) => a.severity === 'MEDIUM' && a.status !== 'RESOLVED').length,
+    RESOLVED: safeAlerts.filter((a) => a.status === 'RESOLVED').length,
   };
 
   return (

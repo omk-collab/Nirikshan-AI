@@ -12,7 +12,7 @@ export const alertService = {
       return simulateAsync(alertsState);
     }
     const response = await apiClient.get('/alerts', { params: { severity } });
-    return response.data;
+    return Array.isArray(response.data) ? response.data : (response.data?.data || []);
   },
 
   async updateAlertStatus(alertId, status) {

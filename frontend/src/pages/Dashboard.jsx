@@ -52,10 +52,12 @@ export default function Dashboard() {
           dashboardService.getSummary(),
           projectService.getProjects({ riskLevel: 'CRITICAL', limit: 5 })
         ]);
-        setSummary(sumData);
-        setCriticalProjects(projData.data || []);
+        setSummary(sumData || {});
+        setCriticalProjects(Array.isArray(projData) ? projData : (projData?.data || []));
       } catch (err) {
         console.error("Failed to load dashboard data", err);
+        setSummary({});
+        setCriticalProjects([]);
       } finally {
         setLoading(false);
       }

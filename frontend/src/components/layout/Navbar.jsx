@@ -12,6 +12,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { userService } from '../../services/userService';
+import { mockUsers } from '../../data/mockUsers';
 
 export default function Navbar({ onMenuToggle }) {
   const navigate = useNavigate();
@@ -20,28 +21,8 @@ export default function Navbar({ onMenuToggle }) {
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleRoleChange = (roleKey) => {
-    const rolesMap = {
-      ADMIN: {
-        name: "Dr. Arvind Subramanian",
-        role: "MINISTRY_ADMIN",
-        email: "admin@example.com",
-        title: "Ministry Administrator",
-      },
-      DISTRICT: {
-        name: "Shri Rajeshwar Rao, IAS",
-        role: "DISTRICT_AUTHORITY",
-        email: "dc.pune@example.com",
-        title: "District Authority (Pune)",
-      },
-      ANALYST: {
-        name: "Priya Sundaram",
-        role: "ANALYST",
-        email: "analyst@example.com",
-        title: "Senior Risk Analyst",
-      }
-    };
-    const selected = rolesMap[roleKey] || rolesMap.ADMIN;
+  const handleRoleChange = (userId) => {
+    const selected = mockUsers.find((u) => u.id === userId) || mockUsers[0];
     userService.setCurrentUser(selected);
     setCurrentUser(selected);
     setShowRoleMenu(false);
@@ -98,31 +79,24 @@ export default function Navbar({ onMenuToggle }) {
           </button>
 
           {showRoleMenu && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50">
+            <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50">
               <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Switch Perspective
               </p>
-              <button
-                onClick={() => handleRoleChange('ADMIN')}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-800 text-slate-200"
-              >
-                <div className="font-semibold text-white">Ministry Admin</div>
-                <div className="text-[11px] text-slate-400">National scope & sanctions</div>
-              </button>
-              <button
-                onClick={() => handleRoleChange('DISTRICT')}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-800 text-slate-200"
-              >
-                <div className="font-semibold text-white">District Authority</div>
-                <div className="text-[11px] text-slate-400">Pune Collectorate scope</div>
-              </button>
-              <button
-                onClick={() => handleRoleChange('ANALYST')}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-800 text-slate-200"
-              >
-                <div className="font-semibold text-white">Risk Analyst</div>
-                <div className="text-[11px] text-slate-400">Audit & anomaly investigation</div>
-              </button>
+              {mockUsers.map((u) => (
+                <button
+                  key={u.id}
+                  onClick={() => handleRoleChange(u.id)}
+                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-800 transition-colors ${
+                    currentUser?.email === u.email ? 'bg-indigo-950/60 border border-indigo-700/50' : 'text-slate-200'
+                  }`}
+                >
+                  <div className="font-semibold text-white">{u.name}</div>
+                  <div className="text-[10px] text-slate-400 font-mono">
+                    {u.role.replace('_', ' ')} &bull; {u.state}
+                  </div>
+                </button>
+              ))}
             </div>
           )}
         </div>

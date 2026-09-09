@@ -21,9 +21,11 @@ export default function Users() {
     async function loadUsers() {
       try {
         const data = await userService.getUsers();
-        setUsers(data || []);
+        const userList = Array.isArray(data) ? data : (data?.data || []);
+        setUsers(userList);
       } catch (e) {
         console.error(e);
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -31,12 +33,14 @@ export default function Users() {
     loadUsers();
   }, []);
 
-  const filteredUsers = users.filter(
+  const safeUsers = Array.isArray(users) ? users : [];
+
+  const filteredUsers = safeUsers.filter(
     (u) =>
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.state.toLowerCase().includes(searchTerm.toLowerCase())
+      (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.role || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.department || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.state || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const roleBadgeStyle = (role) => {

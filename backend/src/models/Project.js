@@ -40,6 +40,10 @@ const projectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Compound indices for fast production query filtering
+projectSchema.index({ state: 1, district: 1 });
+projectSchema.index({ status: 1, workType: 1 });
+
 // Virtual properties for calculated financial ratios (Section 31)
 projectSchema.virtual('costDeviation').get(function () {
   if (!this.estimatedCost || this.estimatedCost === 0) return 0;

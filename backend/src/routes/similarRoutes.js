@@ -6,8 +6,24 @@ const router = express.Router();
 const memorySimilarPairs = [
   {
     pairId: "SIM-2024-001",
-    primaryProjectId: "MPLADS-DEMO-001",
-    matchedProjectId: "MPLADS-MH-2022-814",
+    primaryProject: {
+      id: "MPLADS-DEMO-001",
+      name: "Construction of Bituminous Paver Road from Sector 4 to NH-48",
+      state: "Maharashtra",
+      district: "Pune",
+      workType: "Road Construction",
+      cost: 1500000,
+      description: "Construction of 1.8 km asphalted bitumen road connecting Sector 4 residential colony to NH-48 highway junction with side drainage."
+    },
+    matchedProject: {
+      id: "MPLADS-MH-2022-814",
+      name: "Bituminous Paver Road from Sector 4 Colony to Highway Bypass",
+      state: "Maharashtra",
+      district: "Pune",
+      workType: "Road Construction",
+      cost: 1420000,
+      description: "Laying of bitumen paver road starting from Sector 4 housing board up to highway bypass arterial link with side stormwater drainage."
+    },
     similarityScore: 89.6,
     status: "REQUIRES_REVIEW",
     similarityTag: "Potentially Similar Work",
@@ -15,8 +31,24 @@ const memorySimilarPairs = [
   },
   {
     pairId: "SIM-2024-002",
-    primaryProjectId: "MPLADS-KA-2024-003",
-    matchedProjectId: "STATE-SCD-2023-109",
+    primaryProject: {
+      id: "MPLADS-KA-2024-003",
+      name: "Construction of Community Hall & Skill Center at Doddaballapur",
+      state: "Karnataka",
+      district: "Bengaluru Rural",
+      workType: "Community Hall",
+      cost: 4500000,
+      description: "Construction of two-storey multipurpose community building with computer skill training center in Doddaballapur."
+    },
+    matchedProject: {
+      id: "STATE-SCD-2023-109",
+      name: "Ambedkar Youth Community Hall and Vocational Center",
+      state: "Karnataka",
+      district: "Bengaluru Rural",
+      workType: "Community Hall",
+      cost: 4200000,
+      description: "Establishment of community center with digital literacy room and youth vocational skill training facilities near Doddaballapur town hall."
+    },
     similarityScore: 84.3,
     status: "REQUIRES_REVIEW",
     similarityTag: "Potentially Similar Work",

@@ -7,7 +7,7 @@ export const auditService = {
       return simulateAsync(mockAuditLogs);
     }
     const response = await apiClient.get('/audit-logs');
-    return response.data;
+    return Array.isArray(response.data) ? response.data : (response.data?.data || []);
   },
 
   async logAction(action, entity, entityId, details) {

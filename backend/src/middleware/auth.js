@@ -3,16 +3,22 @@ import { User } from '../models/User.js';
 
 export const protect = async (req, res, next) => {
   let token;
+  const secret = process.env.JWT_SECRET || 'nirikshan_production_jwt_secret_2026_key';
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'nirikshan_super_secure_jwt_secret_key_2024');
+      const decoded = jwt.verify(token, secret);
 
-      // Attach user to request
-      req.user = await User.findById(decoded.id).select('-password');
+      // Try finding user in database if available
+      try {
+        req.user = await User.findById(decoded.id).select('-password');
+      } catch (e) {
+        req.user = null;
+      }
+
       if (!req.user) {
-        // Fallback for demo mock token
+        // Fallback for valid token payload when running without DB instance
         req.user = {
           _id: decoded.id || 'demo_user',
           name: decoded.name || 'Administrative Official',
@@ -20,31 +26,15 @@ export const protect = async (req, res, next) => {
           role: decoded.role || 'MINISTRY_ADMIN',
         };
       }
+
+      if (req.user.status && req.user.status !== 'ACTIVE') {
+        return res.status(403).json({ success: false, message: 'User account is deactivated' });
+      }
+
       return next();
     } catch (error) {
-      // In dev demo mode, permit requests with demo header
-      if (process.env.NODE_ENV === 'development') {
-        req.user = {
-          _id: 'demo_user',
-          name: 'Dr. Arvind Subramanian',
-          email: 'admin@example.com',
-          role: 'MINISTRY_ADMIN',
-        };
-        return next();
-      }
-      return res.status(401).json({ success: false, message: 'Not authorized, invalid token' });
+      return res.status(401).json({ success: false, message: 'Not authorized, invalid or expired token' });
     }
-  }
-
-  // If in development mode and no token provided, grant mock administrative context
-  if (process.env.NODE_ENV === 'development') {
-    req.user = {
-      _id: 'demo_user',
-      name: 'Dr. Arvind Subramanian',
-      email: 'admin@example.com',
-      role: 'MINISTRY_ADMIN',
-    };
-    return next();
   }
 
   return res.status(401).json({ success: false, message: 'Not authorized, token missing' });

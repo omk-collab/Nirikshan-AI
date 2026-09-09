@@ -43,9 +43,9 @@ export default function RiskDashboard() {
           riskService.getCriticalProjects(),
           riskService.getIsolationForestAnomalies(),
         ]);
-        setRiskData(overview);
-        setCriticalProjects(crit);
-        setAnomalies(anom);
+        setRiskData(overview || {});
+        setCriticalProjects(Array.isArray(crit) ? crit : (crit?.data || []));
+        setAnomalies(Array.isArray(anom) ? anom : (anom?.data || []));
       } catch (err) {
         console.error("Failed to load risk intelligence", err);
       } finally {
@@ -66,7 +66,7 @@ export default function RiskDashboard() {
     );
   }
 
-  const { riskWeights, riskFactorImpactAnalysis } = riskData;
+  const riskWeights = Array.isArray(riskData?.riskWeights) ? riskData.riskWeights : [];
 
   return (
     <div className="space-y-6">
@@ -100,7 +100,7 @@ export default function RiskDashboard() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-          {riskWeights.map((rw) => (
+          {Array.isArray(riskWeights) && riskWeights.map((rw) => (
             <div
               key={rw.name}
               className="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-slate-700 transition-colors"
@@ -137,7 +137,7 @@ export default function RiskDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {anomalies.map((anom) => (
+          {Array.isArray(anomalies) && anomalies.map((anom) => (
             <div
               key={anom.projectId}
               className="p-4 rounded-xl border border-rose-900/50 bg-rose-950/20 hover:bg-rose-950/30 transition-all flex flex-col justify-between"
@@ -159,7 +159,7 @@ export default function RiskDashboard() {
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                     Top Contributing Z-Score Vectors:
                   </span>
-                  {anom.topContributingFeatures?.map((f, idx) => (
+                  {Array.isArray(anom.topContributingFeatures) && anom.topContributingFeatures.map((f, idx) => (
                     <div key={idx} className="flex justify-between items-center text-[11px] p-1.5 rounded bg-slate-900/70">
                       <span className="text-slate-300">{f.feature}:</span>
                       <span className="font-bold text-rose-400">
@@ -197,7 +197,7 @@ export default function RiskDashboard() {
             <p className="text-xs text-slate-400">Sorted by composite unified risk index</p>
           </div>
           <span className="text-xs text-slate-400 font-medium">
-            {criticalProjects.length} Flagged Works
+            {Array.isArray(criticalProjects) ? criticalProjects.length : 0} Flagged Works
           </span>
         </div>
 
@@ -214,7 +214,7 @@ export default function RiskDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {criticalProjects.map((p) => (
+              {Array.isArray(criticalProjects) && criticalProjects.map((p) => (
                 <tr key={p.projectId} className="hover:bg-slate-900/50 transition-colors">
                   <td className="py-3 px-4">
                     <Link to={`/projects/${p.projectId}`} className="font-bold text-white hover:text-indigo-400">

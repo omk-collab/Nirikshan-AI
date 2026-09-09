@@ -34,9 +34,11 @@ export default function ProgressMonitoring() {
     async function loadData() {
       try {
         const res = await projectService.getProjects();
-        setProjects(res.data || []);
+        const projectList = Array.isArray(res) ? res : (res?.data || []);
+        setProjects(projectList);
       } catch (e) {
         console.error(e);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
@@ -44,15 +46,17 @@ export default function ProgressMonitoring() {
     loadData();
   }, []);
 
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
   const displayedProjects = filterGapOnly
-    ? projects.filter((p) => p.progressGap > 20)
-    : [...projects].sort((a, b) => b.progressGap - a.progressGap);
+    ? safeProjects.filter((p) => (p?.progressGap || 0) > 20)
+    : [...safeProjects].sort((a, b) => (b?.progressGap || 0) - (a?.progressGap || 0));
 
   const gapChartData = displayedProjects.slice(0, 6).map((p) => ({
-    name: p.projectId.replace('MPLADS-', ''),
-    physical: p.physicalProgress,
-    financial: p.financialProgress,
-    gap: p.progressGap,
+    name: (p.projectId || '').replace('MPLADS-', ''),
+    physical: p.physicalProgress || 0,
+    financial: p.financialProgress || 0,
+    gap: p.progressGap || 0,
   }));
 
   const CustomTooltip = ({ active, payload, label }) => {

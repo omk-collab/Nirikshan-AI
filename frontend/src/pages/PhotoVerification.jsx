@@ -37,23 +37,28 @@ export default function PhotoVerification() {
         projectService.getProjects(),
         photoService.getPhotos(),
       ]);
-      setProjects(projRes.data || []);
-      setPhotos(photoRes || []);
+      const projList = Array.isArray(projRes) ? projRes : (projRes?.data || []);
+      const photoList = Array.isArray(photoRes) ? photoRes : (photoRes?.data || []);
 
-      const current = photoRes.find((p) => p.projectId === initialProjectId) || photoRes[0];
-      setSelectedPhoto(current);
+      setProjects(projList);
+      setPhotos(photoList);
+
+      const current = photoList.find((p) => p.projectId === initialProjectId) || photoList[0];
+      setSelectedPhoto(current || null);
     }
     loadData();
   }, [initialProjectId]);
 
   const handleProjectSelect = (projId) => {
     setSelectedProjectId(projId);
-    const matchedPhoto = photos.find((p) => p.projectId === projId);
+    const photoList = Array.isArray(photos) ? photos : [];
+    const matchedPhoto = photoList.find((p) => p.projectId === projId);
     if (matchedPhoto) {
       setSelectedPhoto(matchedPhoto);
       setVerificationResult(null);
     } else {
-      const currentProj = projects.find((p) => p.projectId === projId);
+      const projList = Array.isArray(projects) ? projects : [];
+      const currentProj = projList.find((p) => p.projectId === projId);
       setSelectedPhoto({
         photoId: `PHT-NEW-${Math.floor(100 + Math.random() * 900)}`,
         projectId: projId,
@@ -137,9 +142,9 @@ export default function PhotoVerification() {
               onChange={(e) => handleProjectSelect(e.target.value)}
               className="w-full px-3 py-2 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
             >
-              {projects.map((p) => (
+              {Array.isArray(projects) && projects.map((p) => (
                 <option key={p.projectId} value={p.projectId}>
-                  {p.projectId} — {p.projectName.slice(0, 45)}...
+                  {p.projectId} — {(p.projectName || '').slice(0, 45)}...
                 </option>
               ))}
             </select>
@@ -216,7 +221,7 @@ export default function PhotoVerification() {
                 Available Verification Samples:
               </span>
               <div className="grid grid-cols-4 gap-2">
-                {photos.map((p) => (
+                {Array.isArray(photos) && photos.map((p) => (
                   <button
                     key={p.photoId}
                     onClick={() => {

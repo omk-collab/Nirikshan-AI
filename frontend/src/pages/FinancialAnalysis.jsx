@@ -35,9 +35,11 @@ export default function FinancialAnalysis() {
     async function loadData() {
       try {
         const res = await projectService.getProjects();
-        setProjects(res.data || []);
+        const projectList = Array.isArray(res) ? res : (res?.data || []);
+        setProjects(projectList);
       } catch (e) {
         console.error(e);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
@@ -45,17 +47,19 @@ export default function FinancialAnalysis() {
     loadData();
   }, []);
 
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
   // Filter projects with cost deviation
-  const costDeviatedProjects = [...projects]
-    .sort((a, b) => b.costDeviation - a.costDeviation);
+  const costDeviatedProjects = [...safeProjects]
+    .sort((a, b) => (b.costDeviation || 0) - (a.costDeviation || 0));
 
   // Top cost outliers for chart
   const costComparisonData = costDeviatedProjects.slice(0, 6).map((p) => ({
-    name: p.projectId.replace('MPLADS-', ''),
-    estimated: (p.estimatedCost / 100000).toFixed(1),
-    actual: (p.actualCost / 100000).toFixed(1),
-    sanctioned: (p.sanctionedAmount / 100000).toFixed(1),
-    deviation: p.costDeviation.toFixed(1),
+    name: (p.projectId || '').replace('MPLADS-', ''),
+    estimated: ((p.estimatedCost || 0) / 100000).toFixed(1),
+    actual: ((p.actualCost || 0) / 100000).toFixed(1),
+    sanctioned: ((p.sanctionedAmount || 0) / 100000).toFixed(1),
+    deviation: (p.costDeviation || 0).toFixed(1),
   }));
 
   const CustomTooltip = ({ active, payload, label }) => {

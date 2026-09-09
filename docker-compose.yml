@@ -11,6 +11,11 @@ services:
       MONGO_INITDB_DATABASE: nirikshan
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ai-service:
     build:
@@ -22,6 +27,7 @@ services:
       - "8000:8000"
     environment:
       - PORT=8000
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
 
   backend:
     build:
@@ -32,13 +38,19 @@ services:
     ports:
       - "5000:5000"
     environment:
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=5000
-      - MONGODB_URI=mongodb://mongodb:27017/nirikshan
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/nirikshan}
       - AI_SERVICE_URL=http://ai-service:8000
-      - JWT_SECRET=nirikshan_secret_key_2026
+      - JWT_SECRET=${JWT_SECRET:-nirikshan_production_jwt_secret_2026_key}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
-      - mongodb
-      - ai-service
+      mongodb:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
 
   frontend:
     build:
@@ -53,3 +65,4 @@ services:
 
 volumes:
   mongo_data:
+  uploads_data:
