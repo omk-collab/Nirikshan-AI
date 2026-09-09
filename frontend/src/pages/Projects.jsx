@@ -48,10 +48,12 @@ export default function Projects() {
           state,
           workType,
         });
-        setProjects(res.data || []);
+        const projectList = Array.isArray(res) ? res : (res?.data || []);
+        setProjects(projectList);
         setCurrentPage(1);
       } catch (err) {
         console.error("Error fetching projects", err);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
@@ -73,12 +75,14 @@ export default function Projects() {
     }
   };
 
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
   // Sorted projects
-  const sortedProjects = [...projects].sort((a, b) => {
+  const sortedProjects = [...safeProjects].sort((a, b) => {
     let valA = a[sortField];
     let valB = b[sortField];
     if (typeof valA === 'string') {
-      return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      return sortAsc ? valA.localeCompare(valB || '') : (valB || '').localeCompare(valA);
     }
     return sortAsc ? (valA || 0) - (valB || 0) : (valB || 0) - (valA || 0);
   });

@@ -7,7 +7,7 @@ export const userService = {
       return simulateAsync(mockUsers);
     }
     const response = await apiClient.get('/users');
-    return response.data;
+    return Array.isArray(response.data) ? response.data : (response.data?.data || []);
   },
 
   getCurrentUser() {

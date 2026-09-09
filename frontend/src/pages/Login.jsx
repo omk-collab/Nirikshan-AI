@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
 import { userService } from '../services/userService';
+import { mockUsers } from '../data/mockUsers';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,34 +21,34 @@ export default function Login() {
       return;
     }
 
+    const matchedUser = mockUsers.find(
+      (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+    );
+
+    if (!matchedUser) {
+      setError('Invalid demo credentials. User account not found.');
+      return;
+    }
+
+    if (password !== 'password123') {
+      setError('Invalid demo credentials. Incorrect passcode.');
+      return;
+    }
+
     setIsLoading(true);
 
     setTimeout(() => {
       localStorage.setItem('nirikshan_token', 'demo-jwt-token-xyz');
-      // Set user session
-      if (email.includes('analyst')) {
-        userService.setCurrentUser({
-          name: "Priya Sundaram",
-          email: "analyst@example.com",
-          role: "ANALYST",
-          department: "Risk Intelligence & Audit Unit"
-        });
-      } else {
-        userService.setCurrentUser({
-          name: "Dr. Arvind Subramanian",
-          email: "admin@example.com",
-          role: "MINISTRY_ADMIN",
-          department: "Ministry of Statistics & Programme Implementation"
-        });
-      }
+      userService.setCurrentUser(matchedUser);
       setIsLoading(false);
       navigate('/dashboard');
-    }, 400);
+    }, 300);
   };
 
-  const handleQuickSelect = (demoEmail, demoRole) => {
+  const handleQuickSelect = (demoEmail) => {
     setEmail(demoEmail);
     setPassword('password123');
+    setError('');
   };
 
   return (
@@ -126,7 +127,14 @@ export default function Login() {
                 />
                 Remember this terminal
               </label>
-              <a href="#reset" onClick={(e) => { e.preventDefault(); alert("In demo mode, any password works with demo emails."); }} className="text-indigo-400 hover:underline">
+              <a
+                href="#reset"
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert("In demo mode, use passcode: password123 for all registered demo accounts.");
+                }}
+                className="text-indigo-400 hover:underline"
+              >
                 Forgot access key?
               </a>
             </div>
@@ -152,31 +160,64 @@ export default function Login() {
             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-3">
               One-Click Demo Access
             </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               <button
                 type="button"
-                onClick={() => handleQuickSelect('admin@example.com', 'MINISTRY_ADMIN')}
+                onClick={() => handleQuickSelect('admin@example.com')}
                 className="p-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:border-indigo-600/60 hover:bg-slate-900 transition-colors text-left"
               >
-                <div className="font-semibold text-white">Ministry Admin</div>
-                <div className="text-[10px] text-slate-400 font-mono">admin@example.com</div>
+                <div className="font-semibold text-white truncate">Ministry Admin</div>
+                <div className="text-[10px] text-slate-400 font-mono truncate">admin@example.com</div>
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickSelect('analyst@example.com', 'ANALYST')}
+                onClick={() => handleQuickSelect('state.mh@example.com')}
                 className="p-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:border-indigo-600/60 hover:bg-slate-900 transition-colors text-left"
               >
-                <div className="font-semibold text-white">Risk Analyst</div>
-                <div className="text-[10px] text-slate-400 font-mono">analyst@example.com</div>
+                <div className="font-semibold text-white truncate">State Authority</div>
+                <div className="text-[10px] text-slate-400 font-mono truncate">state.mh@example.com</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSelect('dc.pune@example.com')}
+                className="p-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:border-indigo-600/60 hover:bg-slate-900 transition-colors text-left"
+              >
+                <div className="font-semibold text-white truncate">District Authority</div>
+                <div className="text-[10px] text-slate-400 font-mono truncate">dc.pune@example.com</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSelect('ee.pwd@example.com')}
+                className="p-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:border-indigo-600/60 hover:bg-slate-900 transition-colors text-left"
+              >
+                <div className="font-semibold text-white truncate">Officer (MH PWD)</div>
+                <div className="text-[10px] text-slate-400 font-mono truncate">ee.pwd@example.com</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSelect('officer.up@example.com')}
+                className="p-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:border-indigo-600/60 hover:bg-slate-900 transition-colors text-left"
+              >
+                <div className="font-semibold text-white truncate">Officer (UP Jal)</div>
+                <div className="text-[10px] text-slate-400 font-mono truncate">officer.up@example.com</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSelect('analyst@example.com')}
+                className="p-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:border-indigo-600/60 hover:bg-slate-900 transition-colors text-left"
+              >
+                <div className="font-semibold text-white truncate">Risk Analyst</div>
+                <div className="text-[10px] text-slate-400 font-mono truncate">analyst@example.com</div>
               </button>
             </div>
           </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Authorized MoSPI Officers and State Planning Authorities only.
+          Demo Access Portal &bull; MoSPI & State/District Planning Authorities
         </p>
       </div>
     </div>
   );
 }
+

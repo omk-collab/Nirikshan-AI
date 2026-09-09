@@ -29,10 +29,12 @@ const projectRiskSchema = new mongoose.Schema(
     ],
     riskReasons: [{ type: String }],
     recommendations: [{ type: String }],
-    analyzedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
+
+// Compound index for fast risk filtering and sorting
+projectRiskSchema.index({ riskLevel: 1, overallRisk: -1 });
 
 export const ProjectRisk = mongoose.model('ProjectRisk', projectRiskSchema);
 export default ProjectRisk;

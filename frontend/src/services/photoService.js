@@ -26,7 +26,7 @@ export const photoService = {
       return simulateAsync(mockPhotos);
     }
     const response = await apiClient.get('/photos', { params: { projectId } });
-    return response.data;
+    return Array.isArray(response.data) ? response.data : (response.data?.data || []);
   },
 
   async verifyPhoto({ projectLat, projectLng, photoLat, photoLng, threshold = 250 }) {

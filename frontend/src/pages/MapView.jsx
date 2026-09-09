@@ -54,9 +54,11 @@ export default function MapView() {
     async function loadProjects() {
       try {
         const res = await projectService.getProjects();
-        setProjects(res.data || []);
+        const projectList = Array.isArray(res) ? res : (res?.data || []);
+        setProjects(projectList);
       } catch (err) {
         console.error(err);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
@@ -64,13 +66,16 @@ export default function MapView() {
     loadProjects();
   }, []);
 
-  const filteredProjects = projects.filter((p) => {
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
+  const filteredProjects = safeProjects.filter((p) => {
+    if (!p) return false;
     if (riskFilter !== 'ALL' && p.riskLevel !== riskFilter) return false;
     if (stateFilter !== 'ALL' && p.state !== stateFilter) return false;
     return true;
   });
 
-  const uniqueStates = Array.from(new Set(projects.map((p) => p.state))).sort();
+  const uniqueStates = Array.from(new Set(safeProjects.map((p) => p?.state || ''))).filter(Boolean).sort();
 
   return (
     <div className="space-y-6">

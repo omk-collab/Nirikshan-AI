@@ -21,9 +21,11 @@ export default function AuditLogs() {
     async function loadLogs() {
       try {
         const data = await auditService.getAuditLogs();
-        setLogs(data || []);
+        const logList = Array.isArray(data) ? data : (data?.data || []);
+        setLogs(logList);
       } catch (e) {
         console.error(e);
+        setLogs([]);
       } finally {
         setLoading(false);
       }
@@ -31,12 +33,15 @@ export default function AuditLogs() {
     loadLogs();
   }, []);
 
-  const filteredLogs = logs.filter((l) => {
+  const safeLogs = Array.isArray(logs) ? logs : [];
+
+  const filteredLogs = safeLogs.filter((l) => {
+    if (!l) return false;
     if (filterAction === 'ALL') return true;
     return l.action === filterAction;
   });
 
-  const uniqueActions = Array.from(new Set(logs.map((l) => l.action)));
+  const uniqueActions = Array.from(new Set(safeLogs.map((l) => l?.action || ''))).filter(Boolean);
 
   return (
     <div className="space-y-6">

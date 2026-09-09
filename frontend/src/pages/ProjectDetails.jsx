@@ -52,9 +52,10 @@ export default function ProjectDetails() {
       setLoading(true);
       try {
         const data = await projectService.getProjectById(id || 'MPLADS-DEMO-001');
-        setProject(data);
+        setProject(data?.data || data || null);
       } catch (err) {
         console.error("Failed to load project details", err);
+        setProject(null);
       } finally {
         setLoading(false);
       }
